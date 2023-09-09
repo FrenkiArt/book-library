@@ -1,0 +1,28 @@
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-inline: auto;
+  max-width: 800px;
+}
+
+.blockSelect {
+  max-width: calc(50% - 0.5rem);
+  width: 100%;
+
+  select {
+    width: 100%;
+    cursor: pointer;
+  }
+}
+
+.blockInputSearch {
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+
+  .search {
+    width: 100%;
+    padding: 0 0.5rem;
+  }
+}
