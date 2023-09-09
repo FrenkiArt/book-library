@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styles from "./SearchBlock.module.scss";
 import React from "react";
 
@@ -10,19 +10,34 @@ export const SearchBlock = () => {
   const [sortValue, setSortValue] = React.useState("relevance");
   const apiKey = "AIzaSyC4l95VMvkKs4z7z-e2tAYySUwpeSgu1iM";
   const dispatch = useDispatch();
+  const [startPaginationIndex, setStartPaginationIndex] = React.useState(0);
+
+  const maxPaginationResults = useSelector((state) => state.paginationCount);
+  const dataUrl = `${bookApiUrl}?q=intitle:${searchValue}${categoryUrl}&langRestrict=ru&startIndex=${String(
+    startPaginationIndex
+  )}&maxResults=${String(
+    maxPaginationResults
+  )}&orderBy=${sortValue}&key=${apiKey}`;
+
+  dispatch({ type: "UPDATE_DATA_URL", payload: dataUrl });
 
   const onFormSubmit = (e) => {
     e.preventDefault();
 
+    setStartPaginationIndex(0);
+
+    dispatch({
+      type: "UPDATE_PAGINATION_INDEX",
+      payload: startPaginationIndex,
+    });
     dispatch({ type: "IS_LOADING", payload: true });
 
-    fetch(
-      `${bookApiUrl}?q=intitle:${searchValue}${categoryUrl}&langRestrict=ru&maxResults=40&orderBy=${sortValue}&key=${apiKey}`
-    )
+    fetch(dataUrl)
       .then((response) => response.json())
       .then((data) => {
-        /* console.log(data); */
-        dispatch({ type: "ADD_DATA", payload: data });
+        console.log(data);
+        dispatch({ type: "UPDATE_DATA", payload: data });
+        dispatch({ type: "ADD_LOCAL_POSTS", payload: data?.items });
         dispatch({ type: "IS_LOADING", payload: false });
       })
       .catch((error) => console.error(error));
@@ -32,6 +47,7 @@ export const SearchBlock = () => {
     <form
       className={styles.form}
       onSubmit={onFormSubmit}
+      autoComplete="off"
     >
       <div className={styles.blockInputSearch}>
         <input
