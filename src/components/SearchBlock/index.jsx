@@ -1,42 +1,45 @@
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./SearchBlock.module.scss";
 import React from "react";
+import { MakeUrl } from "../../utils.js/makeurl";
 
 export const SearchBlock = () => {
-  const bookApiUrl = "https://www.googleapis.com/books/v1/volumes/";
+  const dispatch = useDispatch();
+
   const [searchValue, setSearchValue] = React.useState("");
   const [categoryValue, setСategoryValue] = React.useState("");
   const [categoryUrl, setCategoryUrl] = React.useState("");
-  const [sortValue, setSortValue] = React.useState("relevance");
-  const apiKey = "AIzaSyC4l95VMvkKs4z7z-e2tAYySUwpeSgu1iM";
-  const dispatch = useDispatch();
-  const [startPaginationIndex, setStartPaginationIndex] = React.useState(0);
+  const [sortValue, setSortValue] = React.useState(
+    useSelector((state) => state.queryObject.sortValue)
+  );
 
-  const maxPaginationResults = useSelector((state) => state.paginationCount);
-  const dataUrl = `${bookApiUrl}?q=intitle:${searchValue}${categoryUrl}&langRestrict=ru&startIndex=${String(
-    startPaginationIndex
-  )}&maxResults=${String(
-    maxPaginationResults
-  )}&orderBy=${sortValue}&key=${apiKey}`;
-
-  dispatch({ type: "UPDATE_DATA_URL", payload: dataUrl });
+  const queryObject = useSelector((state) => state.queryObject);
 
   const onFormSubmit = (e) => {
     e.preventDefault();
 
-    setStartPaginationIndex(0);
+    queryObject.paginationIndex = 0;
+    queryObject.searchValue = searchValue;
+    queryObject.categoryUrl = categoryUrl;
+    queryObject.sortValue = sortValue;
 
     dispatch({
-      type: "UPDATE_PAGINATION_INDEX",
-      payload: startPaginationIndex,
+      type: "UPDATE_QUERY_OBJECT",
+      payload: {
+        ...queryObject,
+      },
     });
+
+    const url = MakeUrl(queryObject);
+
+    dispatch({ type: "UPDATE_DATA_URL", payload: url });
     dispatch({ type: "IS_LOADING", payload: true });
 
-    fetch(dataUrl)
+    fetch(url)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        dispatch({ type: "UPDATE_DATA", payload: data });
+        dispatch({ type: "UPDATE_TOTAL_ITEMS", payload: data.totalItems });
         dispatch({ type: "ADD_LOCAL_POSTS", payload: data?.items });
         dispatch({ type: "IS_LOADING", payload: false });
       })

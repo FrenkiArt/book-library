@@ -1,30 +1,40 @@
 import styles from "./ResultsBlock.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { Post } from "../../components";
+import { MakeUrl } from "../../utils.js/makeurl";
 
 export const ResultsBlock = () => {
-  const data = useSelector((state) => state.data);
-  const isLoading = useSelector((state) => state.isLoading);
   const dispatch = useDispatch();
-  const startPaginationIndex = useSelector((state) => state.paginationIndex);
-  const maxPaginationResults = useSelector((state) => state.paginationCount);
+  const totalItems = useSelector((state) => state.totalItems);
+  const isLoading = useSelector((state) => state.isLoading);
   const localPosts = useSelector((state) => state.posts);
   const dataUrl = useSelector((state) => state.dataUrl);
+  const queryObject = useSelector((state) => state.queryObject);
 
   const onLoadMore = () => {
-    dispatch({ type: "IS_LOADING", payload: true });
+    queryObject.paginationIndex =
+      queryObject.paginationIndex + queryObject.paginationCount;
+
     dispatch({
-      type: "UPDATE_PAGINATION_INDEX",
-      payload: startPaginationIndex + 1,
+      type: "UPDATE_QUERY_OBJECT",
+      payload: {
+        ...queryObject,
+      },
     });
 
-    fetch(dataUrl)
+    const newUrl = MakeUrl(queryObject);
+
+    dispatch({ type: "UPDATE_DATA_URL", payload: newUrl });
+
+    dispatch({ type: "IS_LOADING", payload: true });
+
+    fetch(newUrl)
       .then((response) => response.json())
       .then((data) => {
-        dispatch({ type: "UPDATE_DATA", payload: data });
+        console.log(data);
         dispatch({
           type: "ADD_LOCAL_POSTS",
-          payload: [...localPosts, ...data.items].splice(0, data?.totalItems),
+          payload: [...localPosts, ...data.items],
         });
         dispatch({ type: "IS_LOADING", payload: false });
       })
@@ -37,15 +47,28 @@ export const ResultsBlock = () => {
 
       {isLoading ? <p>Данные загружаются</p> : ""}
 
-      {data?.totalItems === 0 && !isLoading ? (
-        <p>Не найдено таких книг.</p>
+      {totalItems === 0 && !isLoading ? <p>Не найдено таких книг.</p> : ""}
+
+      {!isLoading &&
+      totalItems > queryObject.paginationCount &&
+      totalItems !== localPosts.length ? (
+        <>
+          <p>
+            <button
+              onClick={onLoadMore}
+              type="button"
+            >
+              Load more
+            </button>
+          </p>
+        </>
       ) : (
         ""
       )}
 
-      {data?.totalItems && data?.totalItems > 0 ? (
+      {localPosts && localPosts.length > 0 ? (
         <>
-          <p>Всего постов = {data?.totalItems}</p>
+          <p>Всего постов = {totalItems}</p>
           <p>Здесь постов {localPosts.length}</p>
 
           <div className={styles.listResults}>
@@ -61,10 +84,9 @@ export const ResultsBlock = () => {
         ""
       )}
 
-      {localPosts &&
-      !isLoading &&
-      data?.totalItems > maxPaginationResults &&
-      data?.totalItems !== localPosts.length ? (
+      {!isLoading &&
+      totalItems > queryObject.paginationCount &&
+      totalItems !== localPosts.length ? (
         <>
           <p>
             <button
@@ -79,7 +101,7 @@ export const ResultsBlock = () => {
         ""
       )}
 
-      {data?.totalItems === localPosts.length && !isLoading ? (
+      {localPosts && totalItems === localPosts.length && !isLoading ? (
         <>
           <p>Вы достигли конца</p>
           <p>Все {localPosts.length} книжек здесь.</p>
