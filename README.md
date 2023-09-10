@@ -14,7 +14,9 @@ Currently, two official plugins are available:
 ## Docker
 
 docker build -t book-library .
+
 docker run --rm --name book-library -p 5173:5173 -d book-library
+
 docker stop book-library
 
 ## url
