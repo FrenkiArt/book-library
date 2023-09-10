@@ -1,7 +1,7 @@
 import styles from "./ResultsBlock.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { Post } from "../../components";
-import { MakeUrl } from "../../utils.js/makeurl";
+import { MakeUrl } from "../../utils/makeurl";
 
 export const ResultsBlock = () => {
   const dispatch = useDispatch();

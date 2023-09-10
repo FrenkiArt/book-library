@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./SearchBlock.module.scss";
 import React from "react";
-import { MakeUrl } from "../../utils.js/makeurl";
+import { MakeUrl } from "../../utils/makeurl";
 
 export const SearchBlock = () => {
   const dispatch = useDispatch();
