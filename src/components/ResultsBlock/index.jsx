@@ -8,7 +8,7 @@ export const ResultsBlock = () => {
   const totalItems = useSelector((state) => state.totalItems);
   const isLoading = useSelector((state) => state.isLoading);
   const localPosts = useSelector((state) => state.posts);
-  const dataUrl = useSelector((state) => state.dataUrl);
+  /* const dataUrl = useSelector((state) => state.dataUrl); */
   const queryObject = useSelector((state) => state.queryObject);
 
   const onLoadMore = () => {
@@ -31,7 +31,7 @@ export const ResultsBlock = () => {
     fetch(newUrl)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         dispatch({
           type: "ADD_LOCAL_POSTS",
           payload: [...localPosts, ...data.items],
@@ -43,7 +43,7 @@ export const ResultsBlock = () => {
 
   return (
     <>
-      {<p>{dataUrl}</p>}
+      {/* {<p>{dataUrl}</p>} */}
 
       {isLoading ? <p>Данные загружаются</p> : ""}
 

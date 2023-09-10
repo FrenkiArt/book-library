@@ -1,5 +1,5 @@
 export const MakeUrl = (queryObject) => {
-  console.log(queryObject);
+  // console.log(queryObject);
 
   const dataUrl = `${queryObject.bookApiUrl}?q=intitle:${
     queryObject.searchValue

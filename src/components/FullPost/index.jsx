@@ -1,14 +1,10 @@
 /* eslint-disable react/prop-types */
-import styles from "./Post.module.scss";
-import { Link } from "react-router-dom";
+import styles from "./FullPost.module.scss";
 
-export const Post = ({ data }) => {
+export const FullPost = ({ data }) => {
   return (
-    <Link
-      to={`/post/${data.id}`}
-      className={styles.Post}
-    >
-      <div className={styles.PostMedia}>
+    <div className={styles.FullPost}>
+      <p className={styles.PostMedia}>
         <img
           loading="lazy"
           src={
@@ -18,7 +14,7 @@ export const Post = ({ data }) => {
           }
           alt=""
         />
-      </div>
+      </p>
       <div className={styles.PostContent}>
         <h3>{data?.volumeInfo?.title}</h3>
         {data?.volumeInfo?.authors ? (
@@ -27,12 +23,12 @@ export const Post = ({ data }) => {
           ""
         )}
         {data?.volumeInfo?.categories ? (
-          <p>Категории: {data.volumeInfo.categories[0]}</p>
+          <p>Категории: {data.volumeInfo.categories.join(", ")}</p>
         ) : (
           ""
         )}
         <p>{data?.volumeInfo?.description} </p>
       </div>
-    </Link>
+    </div>
   );
 };

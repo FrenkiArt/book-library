@@ -18,6 +18,9 @@ export const SearchBlock = () => {
   const onFormSubmit = (e) => {
     e.preventDefault();
 
+    dispatch({ type: "UPDATE_TOTAL_ITEMS", payload: 0 });
+    dispatch({ type: "ADD_LOCAL_POSTS", payload: [] });
+
     queryObject.paginationIndex = 0;
     queryObject.searchValue = searchValue;
     queryObject.categoryUrl = categoryUrl;
@@ -38,7 +41,7 @@ export const SearchBlock = () => {
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         dispatch({ type: "UPDATE_TOTAL_ITEMS", payload: data.totalItems });
         dispatch({ type: "ADD_LOCAL_POSTS", payload: data?.items });
         dispatch({ type: "IS_LOADING", payload: false });
